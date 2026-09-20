@@ -34,8 +34,55 @@ async def class_selected(call: CallbackQuery):
 
 @user.message((F.text == '/get') | (F.text == '🗓 Мое расписание'))
 async def my_timetable(message: Message):
-    keyboard = await kb.choose_weekday()
-    await message.answer('Выберите день:', reply_markup=keyboard)
+    from datetime import datetime
+    number_datetime = datetime.now().weekday()
+
+    if number_datetime > 5:
+        keyboard = await kb.choose_weekday()
+        await message.answer('Выберите день:', reply_markup=keyboard)
+
+    else:
+        from timetable import classes
+        async with aiosqlite.connect('students.db') as db:
+            async with db.execute('SELECT class, select_view FROM users WHERE user_id = ?', (message.chat.id,)) as cur:
+                temp = await cur.fetchone()
+
+        clac, view = temp
+        dayss = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт']
+        day = dayss[number_datetime]
+
+        text = f'<b>📅 {days[day]}</b>\n'
+
+        if view == 'couples':
+            text += '\n'
+            if day == 'Пт':
+                strok = classes[clac].split(f'{dayss[dayss.index(day)]}')[1]
+            else:
+                strok = classes[clac].split(f'{dayss[dayss.index(day) + 1]}')[0].split(
+                    f'{dayss[dayss.index(day)]}')[1]
+            number = 1
+            for i in range(1, 11):
+                if i % 2 != 0:
+                    text += f'<b>{number}.</b> {strok.split(f'{i}.')[1].split(f'{i + 1}.')[0]}'
+                    number += 1
+
+        else:
+            if day == 'Пн':
+                text += classes[clac].split(f'{dayss[dayss.index(day) + 1]}')[0].split('Пн')[1]
+
+            elif day == 'Пт':
+                text += classes[clac].split(f'{dayss[dayss.index(day)]}')[1]
+
+            else:
+                text += classes[clac].split(f'{dayss[dayss.index(day) + 1]}')[0].split(
+                    f'{dayss[dayss.index(day)]}')[1]
+
+            for number in range(1, 11):
+                text = text.replace(f'{number}.', f'<b>{number}.</b>')
+
+        keyboard = await kb.choose_weekday(day)
+
+        await message.answer(text, reply_markup=keyboard, parse_mode='HTML')
 
 @user.callback_query(F.data.startswith('$'))
 async def day_selected(call: CallbackQuery):
