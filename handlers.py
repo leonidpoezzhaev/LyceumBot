@@ -240,7 +240,7 @@ async def about_bot(message:Message):
                          '└ <b>БД:</b> SQLite\n\n'
                          ''
                          '<b>🧾 Контакты</b>\n'
-                         '├ <b>ТГ Канал:</b> @lupikdev\n'
+                         '├ <b>ТГ Канал:</b> @LyceumBotChannel\n'
                          '└ <b>GitHub:</b> github.com/leonidpoezzhaev/LyceumBot\n\n'
                          ''
                          '<b>📚 Библиотеки</b>\n'
