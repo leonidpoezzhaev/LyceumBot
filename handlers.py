@@ -37,7 +37,7 @@ async def my_timetable(message: Message):
     from datetime import datetime
     number_datetime = datetime.now().weekday()
 
-    if number_datetime > 5:
+    if number_datetime > 4:
         keyboard = await kb.choose_weekday()
         await message.answer('Выберите день:', reply_markup=keyboard)
 
